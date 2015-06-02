@@ -2,6 +2,8 @@ project(Eigen)
 
 cmake_minimum_required(VERSION 2.8.2)
 
+option(EIGEN_ENABLE_TESTING "Enable testing" ON)
+
 # guard against in-source builds
 
 if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
@@ -351,19 +353,20 @@ include(EigenConfigureTesting)
 # fixme, not sure this line is still needed:
 enable_testing() # must be called from the root CMakeLists, see man page
 
+if(EIGEN_ENABLE_TESTING)
+  if(EIGEN_LEAVE_TEST_IN_ALL_TARGET)
+    add_subdirectory(test) # can't do EXCLUDE_FROM_ALL here, breaks CTest
+  else()
+    add_subdirectory(test EXCLUDE_FROM_ALL)
+  endif()
 
-if(EIGEN_LEAVE_TEST_IN_ALL_TARGET)
-  add_subdirectory(test) # can't do EXCLUDE_FROM_ALL here, breaks CTest
-else()
-  add_subdirectory(test EXCLUDE_FROM_ALL)
-endif()
-
-if(EIGEN_LEAVE_TEST_IN_ALL_TARGET)
-  add_subdirectory(blas)
-  add_subdirectory(lapack)
-else()
-  add_subdirectory(blas EXCLUDE_FROM_ALL)
-  add_subdirectory(lapack EXCLUDE_FROM_ALL)
+  if(EIGEN_LEAVE_TEST_IN_ALL_TARGET)
+    add_subdirectory(blas)
+    add_subdirectory(lapack)
+  else()
+    add_subdirectory(blas EXCLUDE_FROM_ALL)
+    add_subdirectory(lapack EXCLUDE_FROM_ALL)
+  endif()
 endif()
 
 add_subdirectory(unsupported)
